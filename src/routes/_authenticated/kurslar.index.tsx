@@ -43,7 +43,7 @@ function CoursesPage() {
     e.preventDefault();
     if (!name.trim()) return;
     const { error } = await supabase.from("courses").insert({ name: name.trim() });
-    if (error) return toast.error("Kurs eklenemedi");
+    if (error) { toast.error("Kurs eklenemedi"); return; }
     setName("");
     toast.success("Kurs eklendi");
     qc.invalidateQueries();
@@ -51,7 +51,7 @@ function CoursesPage() {
 
   async function remove(id: string) {
     const { error } = await supabase.from("courses").delete().eq("id", id);
-    if (error) return toast.error("Kurs silinemedi");
+    if (error) { toast.error("Kurs silinemedi"); return; }
     toast.success("Kurs silindi");
     qc.invalidateQueries();
   }

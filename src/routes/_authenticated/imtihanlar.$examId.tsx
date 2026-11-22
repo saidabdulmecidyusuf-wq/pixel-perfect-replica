@@ -104,7 +104,7 @@ function ExamSheet() {
     setSaving(true);
     const { error } = await supabase.from("exam_results").upsert(rows, { onConflict: "exam_id,student_id" });
     setSaving(false);
-    if (error) return toast.error("Kaydedilemedi: " + error.message);
+    if (error) { toast.error("Kaydedilemedi: " + error.message); return; }
     toast.success(`${rows.length} öğrencinin puanı kaydedildi`);
     qc.invalidateQueries();
   }
@@ -133,7 +133,7 @@ function ExamSheet() {
         };
       })
       .filter((c) => c.rows.length);
-    if (!byCourse.length) return toast.error("Önce puan girip kaydedin.");
+    if (!byCourse.length) { toast.error("Önce puan girip kaydedin."); return; }
     const doc = await examSheetPdf(region ?? "", exam ? `${examLabel(exam)} İmtihanı` : "", byCourse);
     savePdf(doc, `imtihan-cetveli-${exam ? examLabel(exam).replace(" ", "-") : ""}.pdf`);
   }

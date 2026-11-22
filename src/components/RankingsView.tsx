@@ -20,7 +20,7 @@ export function useRankings(data: RankingsInput, period: Period | null) {
     const courseIds = data.courses.map((c) => c.id);
     const courseName = new Map(data.courses.map((c) => [c.id, c.name]));
     const studentMap = new Map(data.students.map((s) => [s.id, s]));
-    if (!period) return { courseIds, courseName, studentMap, scores: [], general: [], courses: [], perCourse: new Map() };
+    if (!period) return { courseIds, courseName, studentMap, scores: [], general: [], courses: [], perCourse: new Map<string, ReturnType<typeof rankStudents>>() };
     const scores = studentScores(data.results, data.exams, period).filter((s) => studentMap.has(s.student_id));
     const general = rankStudents(scores);
     const courses = rankCourses(scores).filter((c) => courseName.has(c.course_id));

@@ -37,7 +37,7 @@ export function AddStudentForm({ courses, fixedCourseId }: { courses: Course[]; 
     setBusy(true);
     const { error } = await supabase.from("students").insert({ first_name: tidyName(first), last_name: tidyName(last), course_id: courseId });
     setBusy(false);
-    if (error) return toast.error("Öğrenci eklenemedi");
+    if (error) { toast.error("Öğrenci eklenemedi"); return; }
     setFirst("");
     setLast("");
     toast.success("Öğrenci eklendi");
@@ -69,7 +69,7 @@ export function StudentRow({ student, editable, right }: { student: Student; edi
 
   async function save() {
     const { error } = await supabase.from("students").update({ first_name: tidyName(first), last_name: tidyName(last) }).eq("id", student.id);
-    if (error) return toast.error("Kaydedilemedi");
+    if (error) { toast.error("Kaydedilemedi"); return; }
     setOpen(false);
     toast.success("İsim güncellendi");
     qc.invalidateQueries();
@@ -77,7 +77,7 @@ export function StudentRow({ student, editable, right }: { student: Student; edi
 
   async function remove() {
     const { error } = await supabase.from("students").delete().eq("id", student.id);
-    if (error) return toast.error("Silinemedi");
+    if (error) { toast.error("Silinemedi"); return; }
     toast.success("Öğrenci silindi");
     qc.invalidateQueries();
   }

@@ -39,14 +39,14 @@ function ExamsPage() {
 
   async function create() {
     const { error } = await supabase.from("exams").insert({ exam_month: Number(month), exam_year: Number(year) });
-    if (error) return toast.error(error.code === "23505" ? "Bu ay için imtihan zaten var." : "İmtihan oluşturulamadı");
+    if (error) { toast.error(error.code === "23505" ? "Bu ay için imtihan zaten var." : "İmtihan oluşturulamadı"); return; }
     toast.success("İmtihan oluşturuldu");
     qc.invalidateQueries();
   }
 
   async function remove(id: string) {
     const { error } = await supabase.from("exams").delete().eq("id", id);
-    if (error) return toast.error("Silinemedi");
+    if (error) { toast.error("Silinemedi"); return; }
     toast.success("İmtihan silindi");
     qc.invalidateQueries();
   }

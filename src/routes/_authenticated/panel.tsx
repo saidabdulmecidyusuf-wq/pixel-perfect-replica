@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/panel")({
   component: Panel,
 });
 
-function Tile({ to, icon: Icon, title, text }: { to: LinkProps["to"]; icon: LucideIcon; title: string; text: string }) {
+function Tile({ to, icon: Icon, title, text }: { to: NonNullable<LinkProps["to"]>; icon: LucideIcon; title: string; text: string }) {
   return (
     <Link to={to} className="group rounded-2xl border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">
       <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
