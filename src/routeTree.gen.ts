@@ -10,33 +10,147 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedOgrencilerRouteImport } from './routes/_authenticated/ogrenciler'
+import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
+import { Route as STokenRouteImport } from './routes/s.$token'
+import { Route as AuthenticatedImtihanlarIndexRouteImport } from './routes/_authenticated/imtihanlar.index'
+import { Route as AuthenticatedImtihanlarExamIdRouteImport } from './routes/_authenticated/imtihanlar.$examId'
+import { Route as AuthenticatedKurslarIndexRouteImport } from './routes/_authenticated/kurslar.index'
+import { Route as AuthenticatedKurslarCourseIdRouteImport } from './routes/_authenticated/kurslar.$courseId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedOgrencilerRoute = AuthenticatedOgrencilerRouteImport.update({
+  id: '/ogrenciler',
+  path: '/ogrenciler',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPanelRoute = AuthenticatedPanelRouteImport.update({
+  id: '/panel',
+  path: '/panel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const STokenRoute = STokenRouteImport.update({
+  id: '/s/$token',
+  path: '/s/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedImtihanlarIndexRoute =
+  AuthenticatedImtihanlarIndexRouteImport.update({
+    id: '/imtihanlar/',
+    path: '/imtihanlar/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedImtihanlarExamIdRoute =
+  AuthenticatedImtihanlarExamIdRouteImport.update({
+    id: '/imtihanlar/$examId',
+    path: '/imtihanlar/$examId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKurslarIndexRoute =
+  AuthenticatedKurslarIndexRouteImport.update({
+    id: '/kurslar/',
+    path: '/kurslar/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKurslarCourseIdRoute =
+  AuthenticatedKurslarCourseIdRouteImport.update({
+    id: '/kurslar/$courseId',
+    path: '/kurslar/$courseId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/ogrenciler': typeof AuthenticatedOgrencilerRoute
+  '/panel': typeof AuthenticatedPanelRoute
+  '/s/$token': typeof STokenRoute
+  '/imtihanlar/$examId': typeof AuthenticatedImtihanlarExamIdRoute
+  '/kurslar/$courseId': typeof AuthenticatedKurslarCourseIdRoute
+  '/imtihanlar/': typeof AuthenticatedImtihanlarIndexRoute
+  '/kurslar/': typeof AuthenticatedKurslarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/ogrenciler': typeof AuthenticatedOgrencilerRoute
+  '/panel': typeof AuthenticatedPanelRoute
+  '/s/$token': typeof STokenRoute
+  '/imtihanlar/$examId': typeof AuthenticatedImtihanlarExamIdRoute
+  '/kurslar/$courseId': typeof AuthenticatedKurslarCourseIdRoute
+  '/imtihanlar': typeof AuthenticatedImtihanlarIndexRoute
+  '/kurslar': typeof AuthenticatedKurslarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/ogrenciler': typeof AuthenticatedOgrencilerRoute
+  '/_authenticated/panel': typeof AuthenticatedPanelRoute
+  '/s/$token': typeof STokenRoute
+  '/_authenticated/imtihanlar/$examId': typeof AuthenticatedImtihanlarExamIdRoute
+  '/_authenticated/kurslar/$courseId': typeof AuthenticatedKurslarCourseIdRoute
+  '/_authenticated/imtihanlar/': typeof AuthenticatedImtihanlarIndexRoute
+  '/_authenticated/kurslar/': typeof AuthenticatedKurslarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/ogrenciler'
+    | '/panel'
+    | '/s/$token'
+    | '/imtihanlar/$examId'
+    | '/kurslar/$courseId'
+    | '/imtihanlar/'
+    | '/kurslar/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/ogrenciler'
+    | '/panel'
+    | '/s/$token'
+    | '/imtihanlar/$examId'
+    | '/kurslar/$courseId'
+    | '/imtihanlar'
+    | '/kurslar'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/ogrenciler'
+    | '/_authenticated/panel'
+    | '/s/$token'
+    | '/_authenticated/imtihanlar/$examId'
+    | '/_authenticated/kurslar/$courseId'
+    | '/_authenticated/imtihanlar/'
+    | '/_authenticated/kurslar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  STokenRoute: typeof STokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +162,98 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/ogrenciler': {
+      id: '/_authenticated/ogrenciler'
+      path: '/ogrenciler'
+      fullPath: '/ogrenciler'
+      preLoaderRoute: typeof AuthenticatedOgrencilerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/panel': {
+      id: '/_authenticated/panel'
+      path: '/panel'
+      fullPath: '/panel'
+      preLoaderRoute: typeof AuthenticatedPanelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/s/$token': {
+      id: '/s/$token'
+      path: '/s/$token'
+      fullPath: '/s/$token'
+      preLoaderRoute: typeof STokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/imtihanlar/': {
+      id: '/_authenticated/imtihanlar/'
+      path: '/imtihanlar'
+      fullPath: '/imtihanlar/'
+      preLoaderRoute: typeof AuthenticatedImtihanlarIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/imtihanlar/$examId': {
+      id: '/_authenticated/imtihanlar/$examId'
+      path: '/imtihanlar/$examId'
+      fullPath: '/imtihanlar/$examId'
+      preLoaderRoute: typeof AuthenticatedImtihanlarExamIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kurslar/': {
+      id: '/_authenticated/kurslar/'
+      path: '/kurslar'
+      fullPath: '/kurslar/'
+      preLoaderRoute: typeof AuthenticatedKurslarIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kurslar/$courseId': {
+      id: '/_authenticated/kurslar/$courseId'
+      path: '/kurslar/$courseId'
+      fullPath: '/kurslar/$courseId'
+      preLoaderRoute: typeof AuthenticatedKurslarCourseIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedOgrencilerRoute: typeof AuthenticatedOgrencilerRoute
+  AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
+  AuthenticatedImtihanlarExamIdRoute: typeof AuthenticatedImtihanlarExamIdRoute
+  AuthenticatedKurslarCourseIdRoute: typeof AuthenticatedKurslarCourseIdRoute
+  AuthenticatedImtihanlarIndexRoute: typeof AuthenticatedImtihanlarIndexRoute
+  AuthenticatedKurslarIndexRoute: typeof AuthenticatedKurslarIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedOgrencilerRoute: AuthenticatedOgrencilerRoute,
+  AuthenticatedPanelRoute: AuthenticatedPanelRoute,
+  AuthenticatedImtihanlarExamIdRoute: AuthenticatedImtihanlarExamIdRoute,
+  AuthenticatedKurslarCourseIdRoute: AuthenticatedKurslarCourseIdRoute,
+  AuthenticatedImtihanlarIndexRoute: AuthenticatedImtihanlarIndexRoute,
+  AuthenticatedKurslarIndexRoute: AuthenticatedKurslarIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  STokenRoute: STokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
