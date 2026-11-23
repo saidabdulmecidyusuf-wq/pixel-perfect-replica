@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Scoring, ranking and analysis rules live only in `src/lib/scoring.ts` (pure, tested); `src/lib/reports.ts` maps results to PDF/analysis rows. Pages and PDFs must call these instead of re-implementing math, so every view ranks identically.
+- PDFs are built in the browser (`src/lib/pdf.ts`, jsPDF with bundled Noto Sans for Turkish letters) and imported dynamically from click handlers, because jsPDF is browser-only.
+- Course managers see only their course through database row rules; pages read with the browser client and rely on those rules rather than client-side filtering.
