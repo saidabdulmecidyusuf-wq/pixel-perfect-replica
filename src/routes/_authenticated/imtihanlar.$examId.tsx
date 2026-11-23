@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { sortStudents } from "@/components/StudentManager";
 import { coursesQuery, errorTypesQuery, examResultsQuery, examsQuery, studentsQuery, type ErrorType } from "@/lib/data";
 import { courseColorVar, examLabel, fmt, fullName, trUpper } from "@/lib/format";
-import { CATEGORY_LABELS, calcKiraat, calcTotal, denseRank, type ErrorCategory, type KiraatError } from "@/lib/scoring";
+import { CATEGORY_LABELS, calcKiraat, calcTotal, type KiraatError } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import { sheetCourses } from "@/lib/reports";
 
 export const Route = createFileRoute("/_authenticated/imtihanlar/$examId")({
   head: () => ({
@@ -42,8 +43,6 @@ const toNum = (v: string) => {
   const n = Number(v.replace(",", "."));
   return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0;
 };
-
-const sumCat = (errs: KiraatError[], c: ErrorCategory) => errs.filter((e) => e.category === c).reduce((s, e) => s + e.count, 0);
 
 function ExamSheet() {
   const { examId } = Route.useParams();
@@ -111,28 +110,7 @@ function ExamSheet() {
 
   async function downloadPdf() {
     const { examSheetPdf, savePdf } = await import("@/lib/pdf");
-    const byCourse = courses
-      .map((c) => {
-        const rs = (results ?? []).filter((r) => r.course_id === c.id);
-        const ranked = denseRank(rs, (r) => r.total);
-        return {
-          name: c.name,
-          average: rs.length ? rs.reduce((s, r) => s + r.total, 0) / rs.length : 0,
-          rows: ranked.map((r) => {
-            const s = students.find((x) => x.id === r.student_id);
-            const errs = r.kiraat_errors ?? [];
-            return {
-              rank: r.rank,
-              name: s ? fullName(s) : "",
-              tecvid: sumCat(errs, "tecvid"),
-              harf: sumCat(errs, "harf"),
-              diger: sumCat(errs, "diger"),
-              kiraat: r.kiraat, ezber: r.ezber, ilmihal: r.ilmihal, siyer: r.siyer, total: r.total,
-            };
-          }),
-        };
-      })
-      .filter((c) => c.rows.length);
+    const byCourse = sheetCourses(results ?? [], courses, students);
     if (!byCourse.length) { toast.error("Önce puan girip kaydedin."); return; }
     const doc = await examSheetPdf(region ?? "", exam ? `${examLabel(exam)} İmtihanı` : "", byCourse);
     savePdf(doc, `imtihan-cetveli-${exam ? examLabel(exam).replace(" ", "-") : ""}.pdf`);
