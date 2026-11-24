@@ -12,4 +12,9 @@
 - [x] Paylaşılabilir salt-okunur link (WhatsApp)
 - [x] PDF: imtihan cetveli, kurs sıralaması, öğrenci sıralaması, kurs analiz raporu
 - [x] Eksik analizi: öğrenci, kurs, mıntıka geneli; sorumlu sadece kendi kursunu görür
-- [ ] Bekliyor (kullanıcı): imtihan cetveli fotoğrafı — cetvel/PDF görünümünü ona göre ayarlamak için
+- [x] İmtihan cetveli fotoğrafı geldi (Ekim Ayı Şifahi İmtihan Cetveli)
+- [ ] Puan girme sayfası kâğıt cetvelin aynısı (tüm sütunlar, üst bilgiler, alt notlar), yazılabilir
+- [ ] Cetvel PDF'i kâğıdın aynısı (dolu + boş)
+- [ ] Kesintiler kâğıttaki gibi (Zât-ı Harf 2 puan; tecvid tek hata 1, mükerrer 2) ve Ayarlar'dan düzenlenebilir
+- [ ] Bölge adı, Grup Mesulü, Grup Seviyesi düzenlenebilir
+- [ ] Cetvel yazıları (sual 15, 100, açıklamalar) Ayarlar'dan değiştirilebilir

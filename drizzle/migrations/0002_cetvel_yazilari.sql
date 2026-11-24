@@ -1,0 +1,1 @@
+ALTER TABLE public.app_settings ADD COLUMN sheet_labels jsonb NOT NULL DEFAULT '{}'::jsonb;

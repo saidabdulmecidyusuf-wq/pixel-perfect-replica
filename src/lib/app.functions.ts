@@ -163,3 +163,14 @@ export const getRegionName = createServerFn({ method: "GET" }).handler(async () 
   const { data } = await db.from("app_settings").select("region_name").eq("id", 1).maybeSingle();
   return data?.region_name ?? "Mıntıka";
 });
+
+/** Sheet header texts (region, Bölge, printed labels). Same visibility as the region name. */
+export const getSheetSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const db = await admin();
+  const { data } = await db.from("app_settings").select("region_name, bolge_name, sheet_labels").eq("id", 1).maybeSingle();
+  return {
+    regionName: data?.region_name ?? "Mıntıka",
+    bolgeName: data?.bolge_name ?? "",
+    labels: (data?.sheet_labels ?? {}) as Record<string, string>,
+  };
+});

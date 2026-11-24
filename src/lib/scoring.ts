@@ -8,6 +8,10 @@ export interface KiraatError {
   name: string;
   category: ErrorCategory;
   deduction: number;
+  /** Points for each further error of the same type; missing = same as `deduction`. */
+  repeat_deduction?: number | null;
+  /** Most points one error type can remove; missing = no limit. */
+  max_deduction?: number | null;
   count: number;
 }
 
@@ -60,18 +64,29 @@ export const CATEGORY_LABELS: Record<ErrorCategory, string> = {
 export const round2 = (n: number) => Math.round(n * 100) / 100;
 const clamp = (n: number, min = 0, max = 100) => Math.min(max, Math.max(min, n));
 
-/** Kıraat starts at 100; every error removes count × deduction points. Never below 0. */
-export function calcKiraat(errors: Pick<KiraatError, "count" | "deduction">[]): number {
-  const lost = errors.reduce((sum, e) => sum + (Number(e.count) || 0) * (Number(e.deduction) || 0), 0);
-  return round2(clamp(100 - lost));
+type Deductible = Pick<KiraatError, "count" | "deduction"> & Partial<Pick<KiraatError, "repeat_deduction" | "max_deduction">>;
+
+/**
+ * Points one error type removes: the first error costs `deduction`, each further
+ * error `repeat_deduction`, capped at `max_deduction`. The paper sheet's tecvid rule
+ * ("tek hatada 1, mükerrer hatada 2 puan") is deduction 1, repeat 1, max 2.
+ */
+export function errorLoss(e: Deductible): number {
+  const n = Math.max(0, Math.floor(Number(e.count) || 0));
+  if (!n) return 0;
+  const first = Number(e.deduction) || 0;
+  const repeat = e.repeat_deduction == null ? first : Number(e.repeat_deduction) || 0;
+  const lost = first + (n - 1) * repeat;
+  return e.max_deduction == null ? lost : Math.min(Number(e.max_deduction), lost);
+}
+
+/** Kıraat starts at 100 and loses the points of every error type. Never below 0. */
+export function calcKiraat(errors: Deductible[]): number {
+  return round2(clamp(100 - errors.reduce((sum, e) => sum + errorLoss(e), 0)));
 }
 
 export function calcTecvidDeduction(errors: KiraatError[]): number {
-  return round2(
-    errors
-      .filter((e) => e.category === "tecvid")
-      .reduce((s, e) => s + (Number(e.count) || 0) * (Number(e.deduction) || 0), 0),
-  );
+  return round2(errors.filter((e) => e.category === "tecvid").reduce((s, e) => s + errorLoss(e), 0));
 }
 
 /** The four sections weigh 25% each. */

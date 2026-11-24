@@ -27,6 +27,15 @@ describe("Kıraat", () => {
   it("starts at 100 and removes count × deduction", () => {
     expect(calcKiraat([{ count: 3, deduction: 2 }, { count: 1, deduction: 5 }])).toBe(89);
   });
+  it("tecvid rule as on the paper sheet: one error 1 point, repeated errors 2 points", () => {
+    const rule = { deduction: 1, repeat_deduction: 1, max_deduction: 2 };
+    expect(calcKiraat([{ ...rule, count: 1 }])).toBe(99);
+    expect(calcKiraat([{ ...rule, count: 2 }])).toBe(98);
+    expect(calcKiraat([{ ...rule, count: 5 }])).toBe(98);
+  });
+  it("Zât-ı Harf removes 2 points for every error", () => {
+    expect(calcKiraat([{ deduction: 2, repeat_deduction: 2, max_deduction: null, count: 3 }])).toBe(94);
+  });
   it("never goes below 0", () => {
     expect(calcKiraat([{ count: 40, deduction: 5 }])).toBe(0);
   });

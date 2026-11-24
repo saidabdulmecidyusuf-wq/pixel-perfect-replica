@@ -16,21 +16,27 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
+          bolge_name: string
           id: number
           region_name: string
           share_token: string
+          sheet_labels: Json
           updated_at: string
         }
         Insert: {
+          bolge_name?: string
           id?: number
           region_name?: string
           share_token?: string
+          sheet_labels?: Json
           updated_at?: string
         }
         Update: {
+          bolge_name?: string
           id?: number
           region_name?: string
           share_token?: string
+          sheet_labels?: Json
           updated_at?: string
         }
         Relationships: []
@@ -67,16 +73,22 @@ export type Database = {
       courses: {
         Row: {
           created_at: string
+          group_leader: string
+          group_level: string
           id: string
           name: string
         }
         Insert: {
           created_at?: string
+          group_leader?: string
+          group_level?: string
           id?: string
           name: string
         }
         Update: {
           created_at?: string
+          group_leader?: string
+          group_level?: string
           id?: string
           name?: string
         }
@@ -88,7 +100,9 @@ export type Database = {
           created_at: string
           deduction: number
           id: string
+          max_deduction: number | null
           name: string
+          repeat_deduction: number | null
           sort_order: number
         }
         Insert: {
@@ -96,7 +110,9 @@ export type Database = {
           created_at?: string
           deduction?: number
           id?: string
+          max_deduction?: number | null
           name: string
+          repeat_deduction?: number | null
           sort_order?: number
         }
         Update: {
@@ -104,7 +120,9 @@ export type Database = {
           created_at?: string
           deduction?: number
           id?: string
+          max_deduction?: number | null
           name?: string
+          repeat_deduction?: number | null
           sort_order?: number
         }
         Relationships: []
@@ -118,6 +136,7 @@ export type Database = {
           ilmihal: number
           kiraat: number
           kiraat_errors: Json
+          sheet_marks: Json
           siyer: number
           student_id: string
           tecvid_deduction: number
@@ -132,6 +151,7 @@ export type Database = {
           ilmihal?: number
           kiraat?: number
           kiraat_errors?: Json
+          sheet_marks?: Json
           siyer?: number
           student_id: string
           tecvid_deduction?: number
@@ -146,6 +166,7 @@ export type Database = {
           ilmihal?: number
           kiraat?: number
           kiraat_errors?: Json
+          sheet_marks?: Json
           siyer?: number
           student_id?: string
           tecvid_deduction?: number
@@ -172,6 +193,69 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_sheets: {
+        Row: {
+          course_id: string
+          exam_date: string | null
+          exam_id: string
+          examiner: string
+          ezber_topic_1: string
+          ezber_topic_2: string
+          kiraat_topic: string
+          note_ezber: string
+          note_genel: string
+          note_ilmihal: string
+          note_siyer: string
+          note_yuzune: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          exam_date?: string | null
+          exam_id: string
+          examiner?: string
+          ezber_topic_1?: string
+          ezber_topic_2?: string
+          kiraat_topic?: string
+          note_ezber?: string
+          note_genel?: string
+          note_ilmihal?: string
+          note_siyer?: string
+          note_yuzune?: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          exam_date?: string | null
+          exam_id?: string
+          examiner?: string
+          ezber_topic_1?: string
+          ezber_topic_2?: string
+          kiraat_topic?: string
+          note_ezber?: string
+          note_genel?: string
+          note_ilmihal?: string
+          note_siyer?: string
+          note_yuzune?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_sheets_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_sheets_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
             referencedColumns: ["id"]
           },
         ]
