@@ -5,16 +5,16 @@ import { FileDown, Minus, Plus, Save } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell, Card, EmptyState } from "@/components/AppShell";
-import { useRegionName } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { sortStudents } from "@/components/StudentManager";
-import { coursesQuery, errorTypesQuery, examResultsQuery, examsQuery, studentsQuery, type ErrorType } from "@/lib/data";
+import { coursesQuery, errorTypesQuery, examResultsQuery, examSheetsQuery, examsQuery, sheetSettingsQuery, studentsQuery, type ErrorType } from "@/lib/data";
 import { courseColorVar, examLabel, fmt, fullName, trUpper } from "@/lib/format";
 import { CATEGORY_LABELS, calcKiraat, calcTotal, type KiraatError } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
-import { sheetCourses } from "@/lib/reports";
+import { sheetPdfInputs } from "@/lib/reports";
+import { errorSnapshot } from "@/lib/sheet";
 
 export const Route = createFileRoute("/_authenticated/imtihanlar/$examId")({
   head: () => ({
@@ -47,12 +47,13 @@ const toNum = (v: string) => {
 function ExamSheet() {
   const { examId } = Route.useParams();
   const qc = useQueryClient();
-  const region = useRegionName();
   const { data: exams = [] } = useQuery(examsQuery);
   const { data: courses = [] } = useQuery(coursesQuery);
   const { data: students = [] } = useQuery(studentsQuery);
   const { data: errorTypes = [] } = useQuery(errorTypesQuery);
   const { data: results, isSuccess } = useQuery(examResultsQuery(examId));
+  const { data: sheets = [] } = useQuery(examSheetsQuery(examId));
+  const { data: sheetSettings } = useQuery(sheetSettingsQuery);
   const exam = exams.find((e) => e.id === examId);
   const [courseId, setCourseId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
@@ -110,9 +111,10 @@ function ExamSheet() {
 
   async function downloadPdf() {
     const { examSheetPdf, savePdf } = await import("@/lib/pdf");
-    const byCourse = sheetCourses(results ?? [], courses, students);
-    if (!byCourse.length) { toast.error("Önce puan girip kaydedin."); return; }
-    const doc = await examSheetPdf(region ?? "", exam ? `${examLabel(exam)} İmtihanı` : "", byCourse);
+    if (!exam) return;
+    const inputs = sheetPdfInputs({ exam, courses, students, results: results ?? [], errorTypes, sheets, settings: sheetSettings });
+    if (!inputs.length) { toast.error("Önce öğrenci ekleyin."); return; }
+    const doc = await examSheetPdf(inputs);
     savePdf(doc, `imtihan-cetveli-${exam ? examLabel(exam).replace(" ", "-") : ""}.pdf`);
   }
 
@@ -231,7 +233,7 @@ function KiraatDialog({ name, types, errors, onChange, onDone }: {
   const countOf = (t: ErrorType) => errors.find((e) => e.id === t.id)?.count ?? 0;
   const setCount = (t: ErrorType, count: number) => {
     const rest = errors.filter((e) => e.id !== t.id);
-    onChange(count > 0 ? [...rest, { id: t.id, name: t.name, category: t.category, deduction: t.deduction, count }] : rest);
+    onChange(count > 0 ? [...rest, errorSnapshot(t, count)] : rest);
   };
   // Keep errors of types that were deleted later (history stays intact).
   const orphan = errors.filter((e) => !types.some((t) => t.id === e.id));

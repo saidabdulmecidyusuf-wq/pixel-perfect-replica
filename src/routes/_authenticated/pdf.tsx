@@ -8,9 +8,9 @@ import { PeriodSelect, defaultPeriod, periodLabel } from "@/components/PeriodSel
 import { useRankings } from "@/components/RankingsView";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { coursesQuery, rankingsQuery, resultsQuery, studentsQuery, useMe } from "@/lib/data";
+import { coursesQuery, errorTypesQuery, examSheetsQuery, rankingsQuery, resultsQuery, sheetSettingsQuery, studentsQuery, useMe } from "@/lib/data";
 import { examLabel, fullName } from "@/lib/format";
-import { analysisPdfInput, sheetCourses } from "@/lib/reports";
+import { analysisPdfInput, sheetPdfInputs } from "@/lib/reports";
 import { studentScores, type Period } from "@/lib/scoring";
 
 export const Route = createFileRoute("/_authenticated/pdf")({
@@ -50,6 +50,10 @@ function PdfPage() {
   const [analysisCourse, setAnalysisCourse] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const activePeriod = period ?? defaultPeriod(exams);
+  const sheetExamId = activePeriod?.kind === "month" ? activePeriod.examId : "";
+  const { data: errorTypes = [] } = useQuery(errorTypesQuery);
+  const { data: sheetSettings } = useQuery(sheetSettingsQuery);
+  const { data: sheets = [] } = useQuery({ ...examSheetsQuery(sheetExamId), enabled: !!sheetExamId });
   const r = useRankings(rk ?? { courses: [], students: [], exams: [], results: [] }, activePeriod);
   const title = periodLabel(activePeriod, exams);
   const fileTag = title.replace(/\s+/g, "-");
@@ -61,13 +65,14 @@ function PdfPage() {
     try { await fn(); } catch { toast.error("PDF hazırlanamadı"); } finally { setBusy(null); }
   }
 
-  const sheet = () => run("sheet", async () => {
+  const sheet = (blank = false) => run(blank ? "blank" : "sheet", async () => {
     if (activePeriod?.kind !== "month") return;
     const exam = exams.find((e) => e.id === activePeriod.examId);
-    const blocks = sheetCourses(results.filter((x) => x.exam_id === activePeriod.examId), courses, students);
-    if (!blocks.length) { toast.error("Bu ay için sonuç yok."); return; }
+    if (!exam) return;
+    const inputs = sheetPdfInputs({ exam, courses, students, results: results.filter((x) => x.exam_id === exam.id), errorTypes, sheets, settings: sheetSettings, blank });
+    if (!inputs.length) { toast.error("Kurslarda öğrenci yok."); return; }
     const { examSheetPdf, savePdf } = await import("@/lib/pdf");
-    savePdf(await examSheetPdf(region, title, blocks), `imtihan-cetveli-${exam ? examLabel(exam).replace(" ", "-") : ""}.pdf`);
+    savePdf(await examSheetPdf(inputs), `${blank ? "bos-" : ""}imtihan-cetveli-${examLabel(exam).replace(" ", "-")}.pdf`);
   });
 
   const courseRanking = () => run("courses", async () => {
@@ -109,7 +114,7 @@ function PdfPage() {
       <p className="mb-4 text-sm font-medium text-muted-foreground">Seçili dönem: {title}</p>
       <div className="grid gap-4 sm:grid-cols-2">
         <PdfCard icon={ClipboardList} title="İmtihan Cetveli" text={me?.isAdmin ? "Seçili ayın cetveli; her kurs ayrı sayfada." : "Kursunuzun seçili aydaki cetveli."}>
-          {activePeriod?.kind === "month" ? btn("sheet", "Cetveli indir", sheet) : <p className="text-sm text-muted-foreground">Cetvel için yukarıdan bir ay seçin.</p>}
+          {activePeriod?.kind === "month" ? <>{btn("sheet", "Cetveli indir", () => sheet())}{btn("blank", "Boş cetvel indir", () => sheet(true))}</> : <p className="text-sm text-muted-foreground">Cetvel için yukarıdan bir ay seçin.</p>}
         </PdfCard>
         <PdfCard icon={Medal} title="Kurs Sıralaması" text="Sıra, kurs, başarı ortalaması ve birinciyle fark.">
           {btn("courses", "Kurs sıralamasını indir", courseRanking)}
