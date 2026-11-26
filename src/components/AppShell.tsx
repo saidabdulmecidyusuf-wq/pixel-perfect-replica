@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { CSSProperties, ReactNode } from "react";
 import {
-  BarChart3, BookOpen, ClipboardList, FileDown, Home, LogOut, Settings, Trophy, Users,
+  BookOpen, ClipboardList, Home, LogOut, Settings, Trophy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/data";
@@ -22,11 +22,8 @@ export function AppShell({ children, title, actions }: { children: ReactNode; ti
     ? [
         { to: "/panel", label: "Ana Sayfa", icon: Home },
         { to: "/kurslar", label: "Kurslar", icon: BookOpen },
-        { to: "/ogrenciler", label: "Öğrenciler", icon: Users },
         { to: "/imtihanlar", label: "İmtihanlar", icon: ClipboardList },
         { to: "/siralama", label: "Sıralama", icon: Trophy },
-        { to: "/analiz", label: "Analiz", icon: BarChart3 },
-        { to: "/pdf", label: "PDF", icon: FileDown },
         { to: "/ayarlar", label: "Ayarlar", icon: Settings },
       ] as const
     : [
@@ -60,10 +57,13 @@ export function AppShell({ children, title, actions }: { children: ReactNode; ti
               <li key={to}>
                 <Link
                   to={to}
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium text-primary-foreground/80 transition hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  className={cn(
+                    "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full text-sm font-medium text-primary-foreground/80 transition hover:bg-primary-foreground/10 hover:text-primary-foreground",
+                    me?.isAdmin ? "px-4 py-2 text-base" : "px-3 py-1.5",
+                  )}
                   activeProps={{ className: "bg-primary-foreground/15 !text-primary-foreground" }}
                 >
-                  <Icon className="size-4" />
+                  <Icon className={me?.isAdmin ? "size-5" : "size-4"} />
                   {label}
                 </Link>
               </li>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BarChart3, BookOpen, ClipboardList, FileDown, Medal, Share2, Trophy, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, FileDown, Share2, Trophy, Users, type LucideIcon } from "lucide-react";
 import { AppShell, Card, RankBadge } from "@/components/AppShell";
 import { ShareDialog } from "@/components/ShareDialog";
 import { defaultPeriod, periodLabel } from "@/components/PeriodSelect";
@@ -24,12 +24,12 @@ export const Route = createFileRoute("/_authenticated/panel")({
 
 function Tile({ to, icon: Icon, title, text }: { to: NonNullable<LinkProps["to"]>; icon: LucideIcon; title: string; text: string }) {
   return (
-    <Link to={to} className="group rounded-2xl border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">
-      <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-        <Icon className="size-5" />
+    <Link to={to} className="group rounded-2xl border bg-card p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">
+      <span className="inline-flex size-14 items-center justify-center rounded-xl bg-primary-soft text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="size-7" />
       </span>
-      <p className="mt-4 font-display text-lg font-semibold">{title}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{text}</p>
+      <p className="mt-4 font-display text-xl font-semibold">{title}</p>
+      <p className="mt-1 text-base text-muted-foreground">{text}</p>
     </Link>
   );
 }
@@ -73,27 +73,37 @@ function Panel() {
         </Card>
       )}
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {isAdmin && <Tile to="/kurslar" icon={BookOpen} title="Kurslar" text="Kurs ekle, sil, başarı durumunu gör." />}
-        {isAdmin && <Tile to="/ogrenciler" icon={Users} title="Öğrenciler" text="Öğrenci ekle, sil, isim değiştir." />}
-        {isAdmin && <Tile to="/imtihanlar" icon={ClipboardList} title="İmtihanlar" text="Aylık imtihan oluştur, puan gir." />}
-        <Tile to="/siralama" icon={Trophy} title="Öğrenci Sıralaması" text="Genel ve kurs içi sıralama." />
-        <Tile to="/siralama" icon={Medal} title="Kurs Sıralaması" text="Kursların başarı ortalamaları." />
-        <Tile to="/analiz" icon={BarChart3} title="Eksik Analizi" text="Bölüm bazında başarı raporu." />
-        <Tile to="/pdf" icon={FileDown} title="PDF" text="Cetvel, sıralama ve rapor indir." />
-        {isAdmin && (
-          <ShareDialog
-            trigger={
-              <button className="group rounded-2xl border bg-hero p-5 text-left text-primary-foreground shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">
-                <span className="inline-flex size-11 items-center justify-center rounded-xl bg-gold text-accent-foreground">
-                  <Share2 className="size-5" />
-                </span>
-                <p className="mt-4 font-display text-lg font-semibold">Sıralamayı Paylaş</p>
-                <p className="mt-1 text-sm text-primary-foreground/75">WhatsApp ile bağlantı gönder.</p>
-              </button>
-            }
-          />
-        )}
+      {isAdmin && (
+        <section className="mb-10">
+          <h2 className="mb-4 text-xl font-semibold">1. Hazırlık ve imtihan</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Tile to="/kurslar" icon={BookOpen} title="Kurslar" text="Kurs ekle, sil, başarı durumunu gör." />
+            <Tile to="/ogrenciler" icon={Users} title="Öğrenciler" text="Öğrenci ekle, sil, isim değiştir." />
+            <Tile to="/imtihanlar" icon={ClipboardList} title="İmtihanlar" text="Aylık imtihan oluştur, puan gir." />
+          </div>
+        </section>
+      )}
+
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">{isAdmin ? "2. Sonuçlar" : "Sonuçlar"}</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Tile to="/siralama" icon={Trophy} title="Sıralama" text="Öğrenci ve kurs sıralaması." />
+          <Tile to="/analiz" icon={BarChart3} title="Eksik Analizi" text="Bölüm bazında başarı raporu." />
+          <Tile to="/pdf" icon={FileDown} title="PDF" text="Cetvel, sıralama ve rapor indir." />
+          {isAdmin && (
+            <ShareDialog
+              trigger={
+                <button className="group rounded-2xl border bg-hero p-6 text-left text-primary-foreground shadow-card transition hover:-translate-y-0.5 hover:shadow-lift">
+                  <span className="inline-flex size-14 items-center justify-center rounded-xl bg-gold text-accent-foreground">
+                    <Share2 className="size-7" />
+                  </span>
+                  <p className="mt-4 font-display text-xl font-semibold">Sıralamayı Paylaş</p>
+                  <p className="mt-1 text-base text-primary-foreground/75">WhatsApp ile bağlantı gönder.</p>
+                </button>
+              }
+            />
+          )}
+        </div>
       </section>
 
       {r.courses.length > 0 && (
